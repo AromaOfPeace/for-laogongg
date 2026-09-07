@@ -286,9 +286,33 @@
         <button onclick="goToQuiz()">💖 QUIZZZ TIMEEEE 💖</button>
     </div>
 
+    <audio id="button" preload="auto">
+        <source src="button.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="correct" preload="auto">
+        <source src="correct.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="incorrect" preload="auto">
+        <source src="wrong.mp3" type="audio/wav">
+    </audio>
+
     <script>
         let loveMeter = 25;
         let celebrationShown = false;
+
+        function playSound(soundId) {
+            const sound = document.getElementById(soundId);
+            if (!sound) return;
+            sound.currentTime = 0;
+            sound.play();
+        }
+
+        document.addEventListener('click', function (event) {
+            const clickedButton = event.target.closest('button');
+            if (!clickedButton) return;
+            if (clickedButton.classList.contains('option-btn')) return;
+            playSound('button');
+        });
 
         function updateLoveMeter() {
             const fill = document.getElementById('loveMeterFill');
