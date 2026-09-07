@@ -249,6 +249,23 @@
         button:active {
             transform: translateY(0);
         }
+        .nav-buttons{
+            display:flex;
+            gap:8px;
+            margin-top:10px;
+        }
+
+        .small-btn{
+            flex:1;
+            padding:8px 10px;
+            font-size:0.85rem;
+            border-radius:12px;
+            background: linear-gradient(180deg, #ffd6e6, #ff9fc3);
+            border: 1px solid rgba(233,115,168,0.18);
+            box-shadow: 0 6px 12px rgba(233,94,150,0.08);
+            cursor:pointer;
+            font-weight:700;
+        }
     </style>
 </head>
 <body>
@@ -282,7 +299,11 @@
             </div>
         </div>
 
-        <button onclick="changeMessage(); increaseLoveMeter();">💌 Click heeeeereeeee UWU 💌</button>
+        <button id="mainClick" onclick="handleMainClick()">💌 Click heeeeereeeee UWU 💌</button>
+        <div class="nav-buttons">
+            <button id="prevBtn" class="small-btn" onclick="historyPrev()">← Rewind</button>
+            <button id="nextBtn" class="small-btn" onclick="historyNext()">Forward →</button>
+        </div>
         <button onclick="goToQuiz()">💖 QUIZZZ TIMEEEE 💖</button>
     </div>
 
@@ -299,6 +320,63 @@
     <script>
         let loveMeter = 25;
         let celebrationShown = false;
+
+        // Message history + content
+        const messages = [
+            "You're the best laogongg ever!! ",
+            "Your kisses lighten me up and make me feel so loved ",
+            " I'm here for you even if you don't feel like talking, i will always listen",
+            "I'm soo happy to have accepted your confession :3",
+            "I love just hanging out with you its so funnnn, everything we do together feels amazing, even when it's just us both breathing 💖",
+            "Where's my ring ? 💞"
+        ];
+        const gifs = [
+            "https://i.pinimg.com/originals/99/f0/10/99f010eae4b4197909fb23b6cf021ece.gif",
+            "https://i.pinimg.com/originals/f2/b0/a8/f2b0a84979a2a2056732e21f1d08d389.gif",
+            "https://i.pinimg.com/originals/d8/34/7a/d8347abdb636243864fb116904101777.gif",
+            "https://i.pinimg.com/originals/0b/5a/65/0b5a6543ff89d57d9144f28b005cd17c.gif"
+        ];
+
+        let history = [];
+        let historyIndex = -1; // points to current shown message index in history
+
+        function pushHistory(msgIdx) {
+            // truncate forward history if we are not at the end
+            if (historyIndex < history.length - 1) {
+                history = history.slice(0, historyIndex + 1);
+            }
+            history.push(msgIdx);
+            historyIndex = history.length - 1;
+            updateNavButtons();
+        }
+
+        function updateNavButtons() {
+            document.getElementById('prevBtn').disabled = historyIndex <= 0;
+            document.getElementById('nextBtn').disabled = historyIndex >= history.length - 1;
+        }
+
+        function showMessageAtIndex(msgIdx) {
+            document.getElementById('message').innerText = messages[msgIdx % messages.length];
+            document.getElementById('valentineGif').src = gifs[msgIdx % gifs.length];
+        }
+
+        function historyPrev() {
+            if (historyIndex > 0) {
+                historyIndex--;
+                const idx = history[historyIndex];
+                showMessageAtIndex(idx);
+                updateNavButtons();
+            }
+        }
+
+        function historyNext() {
+            if (historyIndex < history.length - 1) {
+                historyIndex++;
+                const idx = history[historyIndex];
+                showMessageAtIndex(idx);
+                updateNavButtons();
+            }
+        }
 
         function playSound(soundId) {
             const sound = document.getElementById(soundId);
@@ -363,34 +441,42 @@
         }
 
         function changeMessage() {
+            // If meter was full, reset so user can keep interacting and re-trigger celebration later
             if (loveMeter >= 100) {
-                document.getElementById("message").innerText = 'You are my person, my home<3';
-                return;
+                loveMeter = 25;
+                celebrationShown = false;
+                updateLoveMeter();
             }
 
-            const messages = [
-                "You're the best laogongg ever!! ",
-                "Your kisses lighten me up and make me feel so loved ",
-                " I'm here for you even if you don't feel like talking, i will always listen",
-                "I'm soo happy to have accepted your confession :3",
-                "I love just hanging out with you its so funnnn, everything we do together feels amazing, even when it's just us both breathing 💖",
-                "Where's my ring ? 💞"
-            ];
-            const gifs = [
-                "https://i.pinimg.com/originals/99/f0/10/99f010eae4b4197909fb23b6cf021ece.gif",
-                "https://i.pinimg.com/originals/f2/b0/a8/f2b0a84979a2a2056732e21f1d08d389.gif",
-                "https://i.pinimg.com/originals/d8/34/7a/d8347abdb636243864fb116904101777.gif",
-                "https://i.pinimg.com/originals/0b/5a/65/0b5a6543ff89d57d9144f28b005cd17c.gif"
-            ];
-            document.getElementById("message").innerText = messages[Math.floor(Math.random() * messages.length)];
-            document.getElementById("valentineGif").src = gifs[Math.floor(Math.random() * gifs.length)];
+            // pick a pseudo-random message index and save into history
+            const idx = Math.floor(Math.random() * messages.length);
+            pushHistory(idx);
+            showMessageAtIndex(idx);
+        }
+
+        function handleMainClick() {
+            changeMessage();
+            increaseLoveMeter();
+            playSound('button');
         }
 
         function goToQuiz() {
             window.location.href = "quizz.html";
         }
+        // initialize: show a starting message and add to history
+        (function init() {
+            const startIdx = 0;
+            pushHistory(startIdx);
+            showMessageAtIndex(startIdx);
+            updateLoveMeter();
+            updateNavButtons();
 
-        updateLoveMeter();
+            // keyboard navigation
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowLeft') historyPrev();
+                if (e.key === 'ArrowRight') historyNext();
+            });
+        })();
     </script>
 </body>
 </html>
