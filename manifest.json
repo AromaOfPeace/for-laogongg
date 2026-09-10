@@ -1,0 +1,18 @@
+{
+  "name": "For You 💕",
+  "short_name": "For You",
+  "description": "A little love page for my favorite person.",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#fff3f7",
+  "theme_color": "#f96ca8",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "us.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
