@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="pinkie.png">
+    <link rel="apple-touch-icon" href="pinkie.png">
     <title>QUIZZZ for your eyes only</title>
     <style>
         :root {
@@ -166,13 +168,22 @@
         }
 
         .post-quiz-game.show {
-            display: block;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            text-align: center;
+            max-width: 360px;
+            margin: 18px auto 0;
         }
 
         .post-quiz-game h3 {
-            margin: 0 0 10px;
+            margin: 0;
             color: var(--rose-deep);
             font-size: 0.98rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
         }
 
         .heart-game-area {
@@ -180,22 +191,23 @@
             align-items: center;
             justify-content: center;
             min-height: 74px;
-            margin: 12px 0 10px;
+            width: 100%;
+            margin: 0;
         }
 
         .heart-button {
             border: none;
             background: transparent;
             box-shadow: none;
-            font-size: 2.1rem;
+            font-size: 2.4rem;
             padding: 6px 10px;
             line-height: 1;
             cursor: pointer;
-            transition: transform 0.15s ease;
+            transition: transform 0.15s ease, opacity 0.15s ease;
         }
 
         .game-status {
-            margin: 8px 0 0;
+            margin: 0;
             color: var(--muted);
             font-size: 0.82rem;
             min-height: 18px;
@@ -214,6 +226,123 @@
 
         .reveal-overlay.show {
             display: flex;
+        }
+
+        .toast-container {
+            position: fixed;
+            inset: 20px 20px auto auto;
+            z-index: 80;
+            display: flex;
+            justify-content: flex-end;
+            pointer-events: none;
+        }
+
+        .toast-card {
+            position: relative;
+            max-width: min(90vw, 360px);
+            background: linear-gradient(135deg, rgba(255,255,255,0.94), rgba(255,244,249,0.92));
+            border: 1px solid rgba(233, 115, 168, 0.14);
+            border-radius: 18px;
+            box-shadow: 0 18px 34px rgba(153, 54, 93, 0.14);
+            padding: 14px 16px 12px;
+            transform: translateX(130%);
+            opacity: 0;
+            transition: transform 0.28s ease, opacity 0.28s ease;
+            pointer-events: auto;
+            overflow: hidden;
+        }
+
+        .toast-card::before,
+        .toast-card::after {
+            content: "";
+            position: absolute;
+            inset: auto auto 0 0;
+            width: 130px;
+            height: 130px;
+            background: radial-gradient(circle, rgba(255, 185, 210, 0.28), transparent 65%);
+            pointer-events: none;
+        }
+
+        .toast-card::after {
+            inset: -18px -16px auto auto;
+            width: 90px;
+            height: 90px;
+            background: radial-gradient(circle, rgba(245, 155, 196, 0.22), transparent 68%);
+        }
+
+        .toast-card.show {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        .toast-top {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 6px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .toast-emoji {
+            width: 26px;
+            height: 26px;
+            display: grid;
+            place-items: center;
+            border-radius: 50%;
+            background: linear-gradient(180deg, rgba(255,240,246,0.9), rgba(255,223,236,0.9));
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.8);
+            font-size: 0.82rem;
+            color: #d84e8a;
+            font-weight: 700;
+        }
+
+        .toast-title {
+            font-weight: 700;
+            color: var(--rose-deep);
+            font-size: 0.76rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            position: relative;
+            z-index: 1;
+        }
+
+        .toast-message {
+            margin: 0;
+            color: var(--text);
+            line-height: 1.5;
+            font-size: 0.95rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .toast-card .sparkle-particle {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: rgba(233, 94, 150, 0.7);
+            border-radius: 50%;
+            box-shadow: 0 0 12px rgba(233, 94, 150, 0.4);
+            animation: toastSparkle 1.6s ease-out forwards;
+            pointer-events: none;
+        }
+
+        .toast-card.is-paused {
+            box-shadow: 0 18px 34px rgba(153, 54, 93, 0.2), 0 0 0 1px rgba(233, 115, 168, 0.18);
+        }
+
+        @keyframes toastSparkle {
+            0% {
+                opacity: 0;
+                transform: translate(0, 0) scale(0.5);
+            }
+            25% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 0;
+                transform: translate(var(--dx), var(--dy)) scale(1.2);
+            }
         }
 
         .reveal-modal {
@@ -299,18 +428,34 @@
         }
 
         .result-box {
-            margin-top: 22px;
+            margin: 22px auto 0;
+            width: min(92vw, 420px);
             background: rgba(255, 255, 255, 0.78);
             border: 1px solid rgba(233, 115, 168, 0.2);
             border-radius: 18px;
-            padding: 14px 16px;
-            display: inline-flex;
+            padding: 16px 18px;
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
             align-items: center;
             justify-content: center;
-            gap: 10px;
+            gap: 12px;
             box-shadow: 0 12px 26px rgba(233, 94, 150, 0.08);
             font-size: 1rem;
             color: var(--text);
+            text-align: center;
+        }
+
+        .result-box .result-copy {
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            color: var(--rose-deep);
+            line-height: 1.4;
+        }
+
+        .result-box .gif {
+            margin: 0;
+            width: min(100%, 170px);
+            justify-self: center;
         }
 
         .back-btn {
@@ -322,8 +467,123 @@
             box-shadow: 0 10px 18px rgba(233, 94, 150, 0.08);
         }
 
+        @media (max-width: 480px) {
+            .result-box {
+                grid-template-columns: 1fr;
+                padding: 14px 12px;
+                gap: 10px;
+            }
+
+            .result-box .result-copy {
+                width: 100%;
+                font-size: 0.92rem;
+            }
+
+            .result-box .gif {
+                width: min(100%, 140px);
+            }
+
+            .post-quiz-game {
+                max-width: 320px;
+                padding: 18px 16px;
+                gap: 12px;
+            }
+
+            .heart-game-area {
+                min-height: 92px;
+            }
+
+            .heart-button {
+                font-size: 3rem;
+            }
+
+            .game-status {
+                font-size: 0.85rem;
+                line-height: 1.5;
+            }
+        }
+
         .back-btn:hover {
             background: linear-gradient(180deg, #fff0f6, #ffe3f0);
+        }
+
+        .music-panel {
+            position: fixed;
+            right: 16px;
+            bottom: 16px;
+            z-index: 40;
+            width: min(320px, calc(100vw - 20px));
+            background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(255,239,245,0.94));
+            border: 1px solid rgba(233, 115, 168, 0.2);
+            border-radius: 18px;
+            padding: 10px 12px 10px;
+            box-shadow: 0 18px 30px rgba(186, 82, 122, 0.18);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            transition: width 0.2s ease, padding 0.2s ease;
+        }
+
+        .music-panel .music-toggle {
+            position: absolute;
+            top: 9px;
+            right: 9px;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            border: 1px solid rgba(233, 115, 168, 0.22);
+            background: linear-gradient(180deg, #fff0f6, #ffdfe9);
+            color: var(--rose-deep);
+            font-size: 0.82rem;
+            line-height: 1;
+            display: grid;
+            place-items: center;
+            box-shadow: 0 8px 16px rgba(233, 94, 150, 0.08);
+            padding: 0;
+            margin: 0;
+            min-height: 26px;
+        }
+
+        .music-panel label {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            padding-right: 42px;
+            font-size: 0.7rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--muted);
+            font-weight: 700;
+        }
+
+        .music-panel .mini-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: linear-gradient(180deg, #ff7bad, #ef4d87);
+            box-shadow: 0 0 12px rgba(239, 77, 135, 0.45);
+        }
+
+        .music-panel audio {
+            width: 100%;
+            display: block;
+            height: 38px;
+        }
+
+        .music-panel.collapsed {
+            width: 54px;
+            padding: 12px 10px;
+        }
+
+        .music-panel.collapsed label,
+        .music-panel.collapsed audio {
+            display: none;
+        }
+
+        .music-panel.collapsed .music-toggle {
+            position: static;
+            display: grid;
+            margin: 0 auto;
         }
     </style>
 </head>
@@ -370,7 +630,24 @@
         </div>
     </div>
 
-    <!-- Audio elements -->
+    <div class="toast-container" aria-live="polite" aria-atomic="true">
+        <div class="toast-card" id="customToast">
+            <div class="toast-top">
+                <div class="toast-emoji" id="toastEmoji">💖</div>
+                <div class="toast-title" id="toastTitle">for you</div>
+            </div>
+            <p class="toast-message" id="toastMessage">you are my favorite person</p>
+        </div>
+    </div>
+
+    <div class="music-panel" id="musicPanel">
+        <button class="music-toggle" type="button" aria-label="Hide music player">♥♫</button>
+        <label><span>love song</span><span class="mini-dot" aria-hidden="true"></span></label>
+        <audio id="bgMusic" controls loop preload="auto">
+            <source src="love looks pretty on u.mp3" type="audio/mpeg">
+        </audio>
+    </div>
+
     <audio id="button" preload="auto">
         <source src="button.mp3" type="audio/mpeg">
     </audio>
@@ -384,6 +661,105 @@
     <script>
         let currentQuestion = 0;
         let loveMeterValue = 0;
+
+        const musicStateKey = 'love_page_music_state';
+        const quizStateKey = 'love_quiz_state';
+        const quizSessionStateKey = 'love_quiz_state_session';
+
+        function saveQuizState() {
+            const state = {
+                currentQuestion,
+                loveMeterValue
+            };
+
+            localStorage.setItem(quizStateKey, JSON.stringify(state));
+            sessionStorage.setItem(quizSessionStateKey, JSON.stringify(state));
+        }
+
+        function readSavedQuizState() {
+            try {
+                const sessionState = JSON.parse(sessionStorage.getItem(quizSessionStateKey) || 'null');
+                if (sessionState) return sessionState;
+
+                const localState = JSON.parse(localStorage.getItem(quizStateKey) || 'null');
+                if (localState) return localState;
+            } catch (error) {
+                console.log('quiz state read failed', error);
+            }
+
+            return null;
+        }
+
+        function saveMusicState() {
+            const music = document.getElementById('bgMusic');
+            if (!music) return;
+
+            localStorage.setItem(musicStateKey, JSON.stringify({
+                currentTime: music.currentTime || 0,
+                isPlaying: !music.paused
+            }));
+        }
+
+        function toggleMusicPanel() {
+            const panel = document.getElementById('musicPanel');
+            if (!panel) return;
+
+            const isCollapsed = panel.classList.toggle('collapsed');
+            const toggle = panel.querySelector('.music-toggle');
+            if (toggle) {
+                toggle.textContent = isCollapsed ? '♫' : '♥♫';
+                toggle.setAttribute('aria-label', isCollapsed ? 'Show music player' : 'Hide music player');
+            }
+
+            localStorage.setItem('musicPanelCollapsed', String(isCollapsed));
+        }
+
+        function applyMusicPanelState() {
+            const panel = document.getElementById('musicPanel');
+            if (!panel) return;
+
+            const isCollapsed = localStorage.getItem('musicPanelCollapsed') === 'true';
+            panel.classList.toggle('collapsed', isCollapsed);
+
+            const toggle = panel.querySelector('.music-toggle');
+            if (toggle) {
+                toggle.textContent = isCollapsed ? '♫' : '♥♫';
+                toggle.setAttribute('aria-label', isCollapsed ? 'Show music player' : 'Hide music player');
+            }
+        }
+
+        function restoreMusicState() {
+            const music = document.getElementById('bgMusic');
+            if (!music) return;
+
+            music.volume = 0.5;
+
+            try {
+                const savedState = JSON.parse(localStorage.getItem(musicStateKey) || '{}');
+                if (savedState.currentTime) {
+                    music.currentTime = Number(savedState.currentTime);
+                }
+
+                if (savedState.isPlaying === true) {
+                    music.play().catch(() => {
+                        // autoplay is blocked until the user interacts with the page
+                    });
+                } else {
+                    music.pause();
+                }
+            } catch (error) {
+                console.log('music state restore failed', error);
+                music.play().catch(() => {
+                    // autoplay is blocked until the user interacts with the page
+                });
+            }
+
+            music.addEventListener('timeupdate', saveMusicState);
+            music.addEventListener('play', saveMusicState);
+            music.addEventListener('pause', saveMusicState);
+            window.addEventListener('beforeunload', saveMusicState);
+            window.addEventListener('pagehide', saveMusicState);
+        }
 
         const questions = [
             {
@@ -409,9 +785,16 @@
             },
             {
                 question: "What's my favorite food?",
-                options: ['Pizza', 'Burger' , 'Pasta' , 'You'],
+                options: ['Pizza', 'Burger' , 'Noodles' , 'You'],
                 correctAnswer: 'D',
                 responseCorrect: "Duuuhh ofc i love to eat- i mean you- i mean yes🍆" ,
+                responseIncorrect: " Not this time, but close! 🤭"
+            },
+            {
+                question: "What's my favorite color after knowing you?",
+                options: ['White', 'Blue' , 'Black' , 'Pink'],
+                correctAnswer: 'D',
+                responseCorrect: "You made me love pink again, connected to my feminine side, and you made me feel like a princess, so pink is my favorite color now thanks to you 💖" ,
                 responseIncorrect: " Not this time, but close! 🤭"
             },
             {
@@ -426,6 +809,18 @@
         function updateLoveMeter() {
             const fill = document.getElementById('loveMeterFill');
             fill.style.width = loveMeterValue + '%';
+        }
+
+        function restoreQuizState() {
+            const savedState = readSavedQuizState();
+            if (!savedState) return;
+
+            if (Number.isInteger(savedState.currentQuestion) && savedState.currentQuestion >= 0 && savedState.currentQuestion < questions.length) {
+                currentQuestion = savedState.currentQuestion;
+            }
+            if (Number.isFinite(savedState.loveMeterValue)) {
+                loveMeterValue = Math.min(Math.max(Number(savedState.loveMeterValue), 0), 100);
+            }
         }
 
         function loadQuestion() {
@@ -457,20 +852,101 @@
             const clickedButton = event.target.closest('button');
             if (!clickedButton) return;
             if (clickedButton.classList.contains('option-btn')) return;
+            if (clickedButton.classList.contains('music-toggle')) return;
             playSound('button');
         });
+
+        function showToast({ title, message, emoji, duration = 2200 }) {
+            const toast = document.getElementById('customToast');
+            const toastTitle = document.getElementById('toastTitle');
+            const toastMessage = document.getElementById('toastMessage');
+            const toastEmoji = document.getElementById('toastEmoji');
+
+            if (!toast || !toastTitle || !toastMessage || !toastEmoji) return;
+
+            toastTitle.textContent = title;
+            toastMessage.textContent = message;
+            toastEmoji.textContent = emoji;
+            toast.classList.add('show');
+            toast.classList.remove('is-paused');
+
+            if (showToast.closeTimer) {
+                clearTimeout(showToast.closeTimer);
+            }
+
+            toast.querySelectorAll('.sparkle-particle').forEach((sparkle) => sparkle.remove());
+            const sparkles = 6;
+            for (let i = 0; i < sparkles; i++) {
+                const sparkle = document.createElement('span');
+                sparkle.className = 'sparkle-particle';
+                sparkle.style.left = (10 + Math.random() * 78) + '%';
+                sparkle.style.top = (20 + Math.random() * 60) + '%';
+                sparkle.style.setProperty('--dx', (Math.random() * 60 - 30) + 'px');
+                sparkle.style.setProperty('--dy', (Math.random() * -40 - 10) + 'px');
+                sparkle.style.animationDelay = (i * 0.08) + 's';
+                toast.appendChild(sparkle);
+            }
+
+            setTimeout(() => {
+                toast.querySelectorAll('.sparkle-particle').forEach((sparkle) => sparkle.remove());
+            }, 1300);
+
+            const pauseToast = () => {
+                if (!toast.classList.contains('show')) return;
+                const now = Date.now();
+                showToast.remainingMs = Math.max(0, showToast.deadline - now);
+                showToast.isHolding = true;
+                toast.classList.add('is-paused');
+                if (showToast.closeTimer) {
+                    clearTimeout(showToast.closeTimer);
+                }
+            };
+
+            const resumeToast = () => {
+                if (!toast.classList.contains('show')) return;
+                showToast.isHolding = false;
+                toast.classList.remove('is-paused');
+                if (showToast.remainingMs <= 0) {
+                    toast.classList.remove('show');
+                    return;
+                }
+                showToast.deadline = Date.now() + showToast.remainingMs;
+                showToast.closeTimer = setTimeout(() => {
+                    if (!showToast.isHolding) {
+                        toast.classList.remove('show');
+                    }
+                }, showToast.remainingMs);
+            };
+
+            showToast.remainingMs = duration;
+            showToast.deadline = Date.now() + duration;
+            showToast.isHolding = false;
+            showToast.closeTimer = setTimeout(() => {
+                if (!showToast.isHolding) {
+                    toast.classList.remove('show');
+                }
+            }, duration);
+
+            toast.onpointerdown = pauseToast;
+            toast.onpointerup = resumeToast;
+            toast.onpointerleave = resumeToast;
+            toast.onpointercancel = resumeToast;
+            toast.onmouseenter = pauseToast;
+            toast.onmouseleave = resumeToast;
+        }
 
         function checkAnswer(answer) {
             const current = questions[currentQuestion];
             if (answer === current.correctAnswer) {
                 loveMeterValue = Math.min(loveMeterValue + 20, 100);
                 updateLoveMeter();
+                saveQuizState();
                 playSound('correct');
-                alert(current.responseCorrect);
+                showToast({ title: 'correct', message: current.responseCorrect, emoji: '♥' });
                 nextQuestion();
             } else {
                 playSound('incorrect');
-                alert(current.responseIncorrect);
+                showToast({ title: 'almost', message: current.responseIncorrect, emoji: '×' });
             }
         }
 
@@ -528,30 +1004,63 @@
             if (currentQuestion < questions.length) {
                 loadQuestion();
             } else {
-                alert("🎉 You've completed the quiz! 🎉");
-                alert("Saraghaeyo Oppa <333");
-                alert("'AWOOOOOOOOOOOOOOOOOOOOOOOOOOOOO :3'");
+                saveQuizState();
+                setTimeout(() => {
+                    showToast({ title: 'finished', message: 'You completed the quiz.', emoji: '✦', duration: 2600 });
+                }, 150);
+                setTimeout(() => {
+                    showToast({ title: 'love note', message: 'Saraghaeyo Oppa', emoji: '♥', duration: 2600 });
+                }, 850);
+                setTimeout(() => {
+                    showToast({ title: 'confession', message: 'Awoo, you made my heart feel seen.', emoji: '·', duration: 2600 });
+                }, 1600);
 
-                const message = "No ring? 😔 👉👈 ";
-                const gifElement = "<img src='https://i.pinimg.com/originals/58/c6/55/58c655a14854aaff31b06f4d6372d7aa.gif' class='gif' alt='no ring gif'>";
+                const message = "No ring?";
+                const gifElement = "<a href='https://thepromiseco.com/products/custom-marquise-engraved-promise-ring' target='_blank' rel='noopener noreferrer'><img src='https://i.pinimg.com/originals/58/c6/55/58c655a14854aaff31b06f4d6372d7aa.gif' class='gif' alt='no ring gif'></a>";
                 const resultDiv = document.createElement('div');
                 resultDiv.className = 'result-box';
-                resultDiv.innerHTML = message + gifElement;
+                resultDiv.innerHTML = '<span class="result-copy">' + message + '</span>' + gifElement;
                 document.body.appendChild(resultDiv);
                 showPostQuizGame();
             }
         }
 
-        document.querySelector('.close-modal').addEventListener('click', function () {
-            document.getElementById('revealOverlay').classList.remove('show');
-        });
+        function closeRevealModal() {
+            const revealOverlay = document.getElementById('revealOverlay');
+            if (revealOverlay) {
+                revealOverlay.classList.remove('show');
+                revealOverlay.setAttribute('aria-hidden', 'true');
+            }
+        }
+
+        const revealOverlay = document.getElementById('revealOverlay');
+        if (revealOverlay) {
+            revealOverlay.addEventListener('click', function (event) {
+                if (event.target === revealOverlay) {
+                    closeRevealModal();
+                }
+            });
+        }
+
+        document.querySelector('.close-modal').addEventListener('click', closeRevealModal);
 
         function goBackToMainPage() {
+            saveQuizState();
+            saveMusicState();
             window.location.href = 'index.html';
         }
 
+        closeRevealModal();
+
+        document.getElementById('musicPanel')?.querySelector('.music-toggle')?.addEventListener('click', toggleMusicPanel);
+        window.addEventListener('beforeunload', saveQuizState);
+        window.addEventListener('pagehide', saveQuizState);
+
+        restoreQuizState();
+        applyMusicPanelState();
         updateLoveMeter();
         loadQuestion();
+        restoreMusicState();
     </script>
 </body>
 </html>
